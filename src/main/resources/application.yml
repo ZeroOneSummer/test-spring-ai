@@ -1,0 +1,63 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: ai-chat-app
+  cloud:
+    nacos:
+      server-addr: localhost:8848     # Nacos服务地址
+  ai:
+    openai:
+      # chat模型
+      base-url: https://api.deepseek.com      # DeepSeek
+      api-key: ${DEEPSEEK_API_KEY:xxx}        # https://platform.deepseek.com/ 申请
+      chat:
+        options:
+          model: deepseek-chat      # 聊天模型
+          temperature: 0.8          # 温度值，0-2越小越稳
+      # embedding模型
+      embedding:
+        base-url: https://api.siliconflow.cn    # 硅基流动
+        api-key: ${SILICONFLOW_API_KEY:xxx}     # https://siliconflow.cn 注册获取
+        options:
+          model: BAAI/bge-m3                    # BGE-M3免费
+    # 向量库
+    vectorstore:
+      pinecone:
+        namespace: default
+        index-name: zero-idx
+        host: https://zero-idx-m3bls5y.svc.aped-4627-b74a.pinecone.io
+        api-key: ${PINECONE_API_KEY:xxx}
+    # mcp服务端
+    mcp:
+      server:
+        name: ai-search-mcp
+        version: 1.0.0
+        protocol: STATELESS
+        streamable-http:
+          # 无状态初始化、工具发现和工具调用统一使用该HTTP端点
+          mcp-endpoint: /mcp/search
+
+# Tavily 搜索引擎
+tavily:
+  base-url: https://api.tavily.com
+  api-key: ${TAVILY_API_KEY:xxx}  # 从 https://tavily.com 获取
+  max-results: 5
+
+# 知识库配置
+knowledge:
+  scan-dir: ./knowledge-base
+  top-k: 5
+
+# 日志
+logging:
+  level:
+    io.pinecone: DEBUG
+    org.springframework.web.client: DEBUG
+    org:
+      springframework:
+        ai:
+          chat:
+            client:
+              advisor: DEBUG
